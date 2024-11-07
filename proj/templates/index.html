@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Welcome to Expense Tracker</h1>
+<p>Manage your expenses easily with our simple tracker.</p>
+<a href="{{ url_for('signup') }}">Sign Up</a>
+
+<a href="{{ url_for('expenses') }}" class="btn btn-primary">View Expenses</a>
+{% endblock %}

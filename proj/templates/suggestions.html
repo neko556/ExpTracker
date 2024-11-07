@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spending Suggestions for {{ user.name }}</title>
+</head>
+<body>
+    <h1>Suggestions for {{ user.name }}</h1>
+    <ul>
+        {% for category, message in suggestions.items() %}
+            <li>{{ category }}: {{ message }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>
