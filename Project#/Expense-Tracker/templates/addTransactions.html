@@ -1,0 +1,258 @@
+{% extends 'layoutin.html' %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2 class="text-light mb-4">Add Transactions</h2>
+
+    <form class="form mb-4" method="POST" action="" enctype="multipart/form-data">
+        <div class="form-group row">
+            <div class="col-md-6">
+                <input
+                    type="number"
+                    placeholder="Enter Amount"
+                    class="form-control"
+                    name="amount"
+                    value="{{ request.form.amount }}"
+                    required
+                />
+            </div>
+            <div class="col-md-6">
+                <select name="category" id="category" class="form-control" required>
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="Miscellaneous">Miscellaneous</option>
+                    <option value="Food">Food</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Groceries">Groceries</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="HouseHold">HouseHold</option>
+                    <option value="Rent">Rent</option>
+                    <option value="Bills and Taxes">Bills and Taxes</option>
+                    <option value="Vacations">Vacations</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <input
+                type="text"
+                placeholder="Enter Description"
+                name="description"
+                class="form-control"
+                value="{{ request.form.description }}"
+            />
+        </div>
+        <button type="submit" class="btn btn-primary">Add Transaction</button>
+    </form>
+
+    {% if transactions %}
+    <div class="current-month mb-4">
+        <h4 class="text-light">
+            Expenses Made This Month = <span class="text-success">₹ {{ totalExpenses }}</span>
+        </h4>
+        <div class="btn-group float-right" role="group" aria-label="Chart Options">
+            <a href="category" class="btn btn-warning">Category Pie Chart</a>
+            <a href="yearly_bar" class="btn btn-warning">Comparison Bar Chart</a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-dark table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.date }}</td>
+                    <td>₹{{ transaction.amount }}</td>
+                    <td>{{ transaction.category }}</td>
+                    <td>{{ transaction.description }}</td>
+                    <td>
+                        <a href="editCurrentMonthTransaction/{{ transaction.id }}" class="btn btn-primary btn-sm">Edit</a>
+                        <button
+                            type="button"
+                            class="btn btn-danger btn-sm delete-transaction"
+                            data-toggle="modal"
+                            data-target="#exampleModalCenter"
+                            data-id="{{ transaction.id }}"
+                            data-url="{{ url_for('deleteCurrentMonthTransaction', id=transaction.id) }}"
+                        >
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Floating Button for Attachment -->
+    <button id="uploadPdfBtn" class="floating-btn" data-tooltip="Upload PDF">
+        <i class="fas fa-paperclip"></i>
+    </button>
+
+    <!-- Hidden PDF file input -->
+    <input type="file" name="pdf_file" id="pdf_file" accept="application/pdf" style="display: none;" />
+</div>
+
+<script>
+    function triggerFileInput() {
+        document.getElementById('pdf_file').click();
+    }
+</script> <!-- Bank Selection Section -->
+<!-- Modal for Available Banks -->
+<div id="bankModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="bankModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title text-light" id="bankModalLabel">Available Banks</h5>
+                <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                <!-- AU Small Finance Bank Card -->
+<div class="card bg-dark text-light mb-3" style="cursor: pointer;" onclick="showFileDialog()">
+    <img
+        src="{{ url_for('static', filename='/au_small_finance_bank_logo.png') }}"
+        class="card-img-top"
+        alt="AU Small Finance Bank Logo"
+        style="max-height: 150px; object-fit: contain;"
+    />
+    <div class="card-body">
+        <h5 class="card-title">AU Small Finance Bank</h5>
+        <p class="card-text">Click to upload your file.</p>
+    </div>
+</div>
+
+
+                <!-- Other Banks Coming Soon -->
+                <div class="text-light mt-3">
+                    <h5>Other Banks Coming Soon...</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+   
+
+<script>
+    function showFileDialog() {
+    // Trigger the hidden file input to open the file dialog
+    document.getElementById('pdf_file').click();
+    // Close the modal
+    $('#bankModal').modal('hide');
+}
+
+// Trigger the modal to show when the Upload PDF button is clicked
+document.getElementById('uploadPdfBtn').addEventListener('click', function () {
+    // Show the modal for available banks
+    $('#bankModal').modal('show');
+});
+
+// Event listener for AU Bank button click
+document.querySelector('.card.bg-dark').addEventListener('click', showFileDialog);
+
+document.getElementById('pdf_file').addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const formData = new FormData();
+        formData.append('pdf_file', file);
+
+        // Use fetch to upload the file to the server
+        fetch('/upload_pdf', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message or update UI
+                alert('File uploaded and processed successfully!');
+            } else {
+                // Show error message
+                alert('Failed to upload file: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading file:', error);
+            alert('An error occurred while uploading the file.');
+        });
+    }
+});
+
+</script>
+
+<style>
+    .bank-selection .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .bank-selection .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    .floating-btn {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background-color : #1e1e1e; /* Dark circle */
+        color: #fff; /* White paperclip icon */
+        border: 2px solid #121212; /* Border matching background */
+        border-radius: 50%; /* Circular shape */
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px; /* Icon size */
+        cursor: pointer;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+
+    .floating-btn:hover {
+        transform: scale(1.1); /* Slight zoom effect */
+    }
+
+    .floating-btn:active {
+        transform: scale(0.95); /* Slight shrink on click */
+    }
+
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content {
+        background-color: #2c3e50;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #444;
+    }
+</style>
+{% endblock %}

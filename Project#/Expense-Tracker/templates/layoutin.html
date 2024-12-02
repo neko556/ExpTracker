@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../static/money-icon.png" type="image/x-icon" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+    <title>{% block title %}Expense Tracker{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}" />
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='finance-background.jpg') }}");
+            background-color: #121212; /* Dark background */
+            color: #f8f9fa; /* Light text color */
+            transition: background-color 0.5s ease; /* Smooth background transition */
+            padding-top: 80px; /* Space for fixed navbar */
+            height: 100vh; /* Full viewport height */
+        }
+
+        .navbar {
+            padding: 0.5rem 1rem; /* Smaller padding for thinner navbar */
+            background-color: #222; /* Dark navbar */
+        }
+
+        .container {
+            animation: fadeIn 0.8s ease-in-out; /* Fade-in effect for content */
+            background-color: #1e1e1e; /* Slightly lighter than charcoal for content area */
+            padding-top: 60px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+            margin-top: 20px; /* Margin for spacing */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .btn-primary {
+            transition: background-color 0.3s ease;
+            background-color: #007bff; /* Bootstrap primary color */
+        }
+
+        .btn-primary:hover {
+            background-color: #00b894; /* Bright color on hover */
+        }
+
+        /* Custom styles for alerts and messages */
+        .alert {
+            background-color: #343a40; /* Dark background for alerts */
+            color: #f8f9fa; /* Light text color */
+            
+        }
+
+        /* Style for form inputs */
+        .form-control {
+            background-color: #1e1e1e; /* Dark input background */
+            color: #f8f9fa; /* Light text color */
+            border: 1px solid #444; /* Dark border */
+        }
+
+        .form-control:focus {
+            background-color: #1e1e1e; /* Keep dark background on focus */
+            color: #f8f9fa; /* Light text color */
+            border-color: #00b894; /* Highlight border color on focus */
+            box-shadow: 0 0 5px rgba(0, 184, 148, 0.5); /* Shadow effect */
+        }
+
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+            h5 {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'includes/_navbar.html' %}
+
+    <div class="container">
+        {% include 'includes/_messages.html' %}
+        {% block body %}{% endblock %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="//cdn.ckeditor.com/4.13.1/standard/ckeditor.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.body.classList.add("fade-in");
+        });
+
+        window.addEventListener("beforeunload", function() {
+            document.body.classList.remove("fade-in");
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-light mb-4">Track Your Budget</h2>
+
+    <!-- Check if the user has set a budget -->
+    {% if not user_has_password %}
+        <h3 class="text-light">You have not set a budget yet</h3>
+        <p class="text-light">Please set your monthly budget and savings goal:</p>
+        <form method="POST" class="mb-4">
+            <div class="form-group">
+                <label for="monthly_budget" class="text-light">Monthly Budget</label>
+                <input type="number" class="form-control bg-dark text-light" id="monthly_budget" name="monthly_budget" required>
+            </div>
+            <div class="form-group">
+                <label for="monthly_savings_goal" class="text-light">Monthly Savings Goal</label>
+                <input type="number" class="form-control bg-dark text-light" id="monthly_savings_goal" name="monthly_savings_goal" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Budget</button>
+        </form>
+    {% else %}
+        <!-- Overall Budget Card -->
+        <div class="card bg-dark text-light border-secondary mb-4">
+            <div class="card-body">
+                {% if budget_data %}
+                    <div class="current-budget">
+                        <h3 class="mb-4">Overall Budget Settings</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card bg-secondary mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Monthly Budget</h5>
+                                        <p class="card-text display-4">₹{{ budget_data['monthly_budget'] }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-secondary mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Monthly Savings Goal</h5>
+                                        <p class="card-text display-4">₹{{ budget_data['monthly_savings_goal'] }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <form method="POST" action="{{ url_for('track_budget') }}" class="mt-4">
+                            <h4>Update Overall Budget</h4>
+                            <div class="form-group">
+                                <label for="password">Enter Budget Password</label>
+                                <input type="password" class="form-control bg-dark text-light" id="password" name="password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="monthly_budget">Monthly Budget</label>
+                                <input type="number" class="form-control bg-dark text-light" id="monthly_budget" name="monthly_budget" value="{{ budget_data['monthly_budget'] }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="monthly_savings_goal">Monthly Savings Goal</label>
+                                <input type="number" class="form-control bg-dark text-light" id="monthly_savings_goal" name="monthly_savings_goal" value="{{ budget_data['monthly_savings_goal'] }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Budget</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <h3 class="mb-4">Set Your Budget</h3>
+                    <form method="POST" action="{{ url_for('track_budget') }}">
+                        <div class="form-group">
+                            <label for="monthly_budget">Monthly Budget</label>
+                            <input type="number" class="form-control bg-dark text-light" id="monthly_budget" name="monthly_budget" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="monthly_savings_goal">Monthly Savings Goal</label>
+                            <input type="number" class="form-control bg-dark text-light" id="monthly_savings_goal" name="monthly_savings_goal" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Budget</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    p {
+        font-size: 18px;
+    }
+</style>
+{% endblock %}
